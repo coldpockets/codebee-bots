@@ -23,6 +23,11 @@ protected:
     void getTurn(Map& curMap);
     void sendTurn(std::vector<Action> moves);
 
+    bool isBesideHiveOrQueen(Position pos);
+    bool isBeside(Position pos, Position target);
+
+    Position getBoundedPos(int x, int y);
+
     virtual std::vector<Action> getMoves(int id, const Map& curMap) = 0;
 
     int id;
@@ -33,7 +38,6 @@ protected:
     std::vector<Cell*> hiveCells;
     std::shared_ptr<QueenBee> queenBee;
     int totalBees;
-    int totalPollen;
 
 private:
     std::string serializeActions(std::vector<Action> actions);

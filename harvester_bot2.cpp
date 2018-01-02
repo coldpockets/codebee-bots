@@ -14,10 +14,6 @@ fstream fs;
 class HarvesterBot2 : public Bot {
 public:
     HarvesterBot2(int minPollen) : Bot("HarvesterBot2"), minPollen(minPollen), spawnedHive(false) {
-//        queenMoves.push(move::UP);
-//        queenMoves.push(move::UP);
-//        queenMoves.push(move::LEFT);
-//        queenMoves.push(move::DOWN);
     }
 
 protected:
@@ -29,15 +25,17 @@ protected:
             shared_ptr<Bee> bee = (*beeCell)->getBee();
             Position pos = (*beeCell)->getPosition();
             if (bee->pollen >= minPollen * bee->count) {
-                Map::Path minPath = curMap.getPath(pos, queenBee->pos);
-                for (auto hiveCell = hiveCells.begin(); hiveCell != hiveCells.end(); ++hiveCell) {
-                    Map::Path path = curMap.getPath(pos, (*hiveCell)->getPosition());
-                    if (path.distance < minPath.distance) {
-                        minPath = path;
+                if (!isBesideHiveOrQueen(bee->pos)) {
+                    Map::Path minPath = curMap.getPath(pos, queenBee->pos);
+                    for (auto hiveCell = hiveCells.begin(); hiveCell != hiveCells.end(); ++hiveCell) {
+                        Map::Path path = curMap.getPath(pos, (*hiveCell)->getPosition());
+                        if (path.distance < minPath.distance) {
+                            minPath = path;
+                        }
                     }
+                    moves.push_back(
+                            Action(actionType::MOVE, pos, minPath.move, minPath.move - 1 /* Faces move direction. */));
                 }
-                moves.push_back(
-                        Action(actionType::MOVE, pos, minPath.move, minPath.move - 1 /* Faces move direction. */));
             } else {
                 Cell* firstFlower = flowerCells[0];
                 Map::Path minPath = curMap.getPath(pos, firstFlower->getPosition());
@@ -54,24 +52,12 @@ protected:
 
         Position queenPos = queenBee->pos;
 
-        if (!spawnedHive) {
-            if (queenBee->pollen >= HIVE_POLLEN_AMOUNT) {
-                moves.push_back(Action(actionType::CREATE_HIVE));
-                queenMoves.push(move::UP);
-                queenMoves.push(move::LEFT);
-                spawnedHive = true;
-            }
-        } else {
-            if (hiveCells.size() > 0 && queenBee->pollen >= BEE_POLLEN_AMOUNT) {
-                moves.push_back(Action(actionType::SPAWN, hiveCells.front()->getPosition(),
-                                       queenBee->pollen / BEE_POLLEN_AMOUNT));
-            }
-            if (queenMoves.size() > 0) {
-                moves.push_back(Action(actionType::MOVE_QUEEN, queenMoves.front(), rand() % 4));
-                queenMoves.pop();
-            } else {
-                moves.push_back(Action(actionType::MOVE_QUEEN, move::STAY, rand() % 4));
-            }
+        if (!spawnedHive && queenBee->pollen >= HIVE_POLLEN_AMOUNT) {
+            moves.push_back(Action(actionType::CREATE_HIVE));
+            spawnedHive = true;
+        } else if (hiveCells.size() > 0 && queenBee->pollen >= BEE_POLLEN_AMOUNT) {
+            moves.push_back(Action(actionType::SPAWN, hiveCells.front()->getPosition(),
+                                   queenBee->pollen / BEE_POLLEN_AMOUNT));
         }
         return moves;
     }
@@ -79,7 +65,6 @@ protected:
 private:
     const int minPollen;
     bool spawnedHive;
-    queue<Move> queenMoves;
 };
 
 int main() {

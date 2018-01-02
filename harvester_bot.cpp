@@ -24,9 +24,11 @@ protected:
             shared_ptr<Bee> bee = (*beeCell)->getBee();
             Position pos = (*beeCell)->getPosition();
             if (bee->pollen >= minPollen * bee->count) {
-                Map::Path path = curMap.getPath(pos, queenBee->pos);
-                moves.push_back(
-                        Action(actionType::MOVE, pos, path.move, path.move - 1 /* Faces move direction. */));
+                if (!isBesideHiveOrQueen(bee->pos)) {
+                    Map::Path path = curMap.getPath(pos, queenBee->pos);
+                    moves.push_back(
+                            Action(actionType::MOVE, pos, path.move, path.move - 1 /* Faces move direction. */));
+                }
             } else {
                 Cell* firstFlower = flowerCells[0];
                 Map::Path minPath = curMap.getPath(pos, firstFlower->getPosition());

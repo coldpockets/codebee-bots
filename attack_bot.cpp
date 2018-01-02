@@ -134,7 +134,7 @@ int main() {
 
     cout.sync_with_stdio(false);
 
-    AttackBot attackBot = AttackBot(2, 30, 0.20f);
+    AttackBot attackBot = AttackBot(1, 30, 0.20f);
 
     attackBot.run();
 

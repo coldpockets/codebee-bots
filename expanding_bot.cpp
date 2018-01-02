@@ -14,7 +14,7 @@ fstream fs;
 
 class ExpandingBot : public Bot {
 public:
-    ExpandingBot(int minPollen) : Bot("ExpandingBot"), minPollen(minPollen) { }
+    ExpandingBot(int minPollen, float ratio) : Bot("ExpandingBot"), minPollen(minPollen), ratio(ratio) { }
 
 protected:
     vector<Action> getMoves(int id, const Map& curMap) {
@@ -48,51 +48,54 @@ protected:
             }
         }
 
-        // Find closest flower that is not beside a hive.
         int pollenNotUsed = queenBee->pollen;
-        Position queenPos = queenBee->pos;
-        set<Map::Path> flowerPaths;
-        bool creatingHive = false;
-        bool shouldCreateHive = curMap.map[queenPos.y][queenPos.x]->getPotency() == 0;
-        for (auto flowerCell = flowerCells.begin(); flowerCell != flowerCells.end(); ++flowerCell) {
-            if (!nearHive((*flowerCell)->getPosition())) {
-                Position flowerPos = (*flowerCell)->getPosition();
-                if (shouldCreateHive
-                    && abs(queenPos.x - flowerPos.x) <= 1 && abs(queenPos.y - flowerPos.y) <= 1) {
-                    pollenNotUsed -= HIVE_POLLEN_AMOUNT;
-                    moves.push_back(Action(actionType::CREATE_HIVE));
-                    creatingHive = true;
-                    break;
-                } else {
-                    flowerPaths.insert(curMap.getPath(queenPos, flowerPos));
+
+        // Find closest flower that is not beside a hive if bees:hives ratio is greater than specified.
+        if (totalBees > ratio * hiveCells.size()) {
+            Position queenPos = queenBee->pos;
+            set<Map::Path> flowerPaths;
+            bool creatingHive = false;
+            bool canCreateHive = curMap.map[queenPos.y][queenPos.x]->getPotency() == 0;
+            for (auto flowerCell = flowerCells.begin(); flowerCell != flowerCells.end(); ++flowerCell) {
+                if (!nearHive((*flowerCell)->getPosition())) {
+                    Position flowerPos = (*flowerCell)->getPosition();
+                    bool beside = isBeside(queenPos, flowerPos);
+                    if (canCreateHive && isBeside(queenPos, flowerPos)) {
+                        pollenNotUsed -= HIVE_POLLEN_AMOUNT;
+                        moves.push_back(Action(actionType::CREATE_HIVE));
+                        creatingHive = true;
+                        break;
+                    } else if (!beside) {
+                        flowerPaths.insert(curMap.getPath(queenPos, flowerPos));
+                    }
                 }
             }
-        }
 
-        // Move towards closest flower, or if on a flower, then move to a vacant spot if possible.
-        if (!creatingHive) {
-            for (auto path = flowerPaths.begin(); path != flowerPaths.end(); ++path) {
-                if (path->distance == 0) {
-                    int top = (queenPos.y + curMap.height - 1) % curMap.height;
-                    int bot = (queenPos.y + 1) % curMap.height;
-                    int left = (queenPos.x + curMap.width - 1) % curMap.width;
-                    int right = (queenPos.x + 1) % curMap.width;
-                    if (curMap.map[queenPos.y][left]->getPotency() == 0) {
-                        moves.push_back(Action(actionType::MOVE_QUEEN, move::LEFT));
-                        break;
-                    } else if (curMap.map[top][queenPos.x]->getPotency() == 0) {
-                        moves.push_back(Action(actionType::MOVE_QUEEN, move::UP));
-                        break;
-                    } else if (curMap.map[queenPos.y][right]->getPotency() == 0) {
-                        moves.push_back(Action(actionType::MOVE_QUEEN, move::RIGHT));
-                        break;
-                    } else if (curMap.map[bot][queenPos.x]->getPotency() == 0) {
-                        moves.push_back(Action(actionType::MOVE_QUEEN, move::DOWN));
+            // Move towards closest flower, or if on a flower, then move to a vacant spot if possible.
+            if (!creatingHive) {
+                for (auto path = flowerPaths.begin(); path != flowerPaths.end(); ++path) {
+                    if (path->distance == 0) {
+                        int top = (queenPos.y + curMap.height - 1) % curMap.height;
+                        int bot = (queenPos.y + 1) % curMap.height;
+                        int left = (queenPos.x + curMap.width - 1) % curMap.width;
+                        int right = (queenPos.x + 1) % curMap.width;
+                        if (curMap.map[queenPos.y][left]->getPotency() == 0) {
+                            moves.push_back(Action(actionType::MOVE_QUEEN, move::LEFT));
+                            break;
+                        } else if (curMap.map[top][queenPos.x]->getPotency() == 0) {
+                            moves.push_back(Action(actionType::MOVE_QUEEN, move::UP));
+                            break;
+                        } else if (curMap.map[queenPos.y][right]->getPotency() == 0) {
+                            moves.push_back(Action(actionType::MOVE_QUEEN, move::RIGHT));
+                            break;
+                        } else if (curMap.map[bot][queenPos.x]->getPotency() == 0) {
+                            moves.push_back(Action(actionType::MOVE_QUEEN, move::DOWN));
+                            break;
+                        }
+                    } else {
+                        moves.push_back(Action(actionType::MOVE_QUEEN, path->move));
                         break;
                     }
-                } else {
-                    moves.push_back(Action(actionType::MOVE_QUEEN, flowerPaths.begin()->move));
-                    break;
                 }
             }
         }
@@ -112,6 +115,7 @@ protected:
 
 private:
     const int minPollen;
+    const float ratio;
 
     bool nearHive(Position pos) {
         int top = (pos.y + curMap->height - 1) % curMap->height;
@@ -138,7 +142,7 @@ int main() {
 
     cout.sync_with_stdio(false);
 
-    ExpandingBot expandingBot = ExpandingBot(1);
+    ExpandingBot expandingBot = ExpandingBot(1, 30.0f);
 
     expandingBot.run();
 

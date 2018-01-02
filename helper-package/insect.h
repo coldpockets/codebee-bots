@@ -1,7 +1,3 @@
-//
-// Created by William on 29/12/2017.
-//
-
 #ifndef CODEBEE_BOTS_INSECT_H
 #define CODEBEE_BOTS_INSECT_H
 

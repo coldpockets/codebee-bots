@@ -90,8 +90,6 @@ void Bot::getTurn(Map& curMap) {
             }
         }
     }
-
-    totalPollen = queenBee->pollen;
 }
 
 void Bot::sendTurn(std::vector<Action> moves) {
@@ -112,23 +110,23 @@ string Bot::getString() {
 
 std::string Bot::serializeActions(std::vector<Action> actions) {
     json stringified;
-    for (auto action = actions.begin(); action != actions.end(); ++action) {
+    for (auto &action : actions) {
         json jsonAction;
-        jsonAction["type"] = action->type;
-        switch (action->type) {
+        jsonAction["type"] = action.type;
+        switch (action.type) {
             case actionType::MOVE:
-                jsonAction["x"] = action->pos.x;
-                jsonAction["y"] = action->pos.y;
+                jsonAction["x"] = action.pos.x;
+                jsonAction["y"] = action.pos.y;
                 // Fallthrough.
             case actionType::MOVE_QUEEN:
-                jsonAction["move"] = action->moveOrSpawnAmount;
-                jsonAction["face"] = action->face;
+                jsonAction["move"] = action.moveOrSpawnAmount;
+                jsonAction["face"] = action.face;
                 break;
             case actionType::SPAWN:
-                jsonAction["x"] = action->pos.x;
-                jsonAction["y"] = action->pos.y;
-                jsonAction["amount"] = action->moveOrSpawnAmount;
-                jsonAction["face"] = action->face;
+                jsonAction["x"] = action.pos.x;
+                jsonAction["y"] = action.pos.y;
+                jsonAction["amount"] = action.moveOrSpawnAmount;
+                jsonAction["face"] = action.face;
                 break;
             case actionType::CREATE_HIVE:
                 break;
@@ -136,4 +134,32 @@ std::string Bot::serializeActions(std::vector<Action> actions) {
         stringified.push_back(jsonAction);
     }
     return stringified.dump();
+}
+
+bool Bot::isBesideHiveOrQueen(Position pos) {
+    bool beside = isBeside(pos, queenBee->pos);
+    for (auto &hiveCell : hiveCells) {
+        if (beside) {
+            return beside;
+        } else {
+            beside = isBeside(pos, hiveCell->getPosition());
+        }
+    }
+    return beside;
+}
+
+bool Bot::isBeside(Position pos, Position target) {
+    return pos == target ||
+        getBoundedPos(pos.x, pos.y + 1) == target ||
+        getBoundedPos(pos.x, pos.y - 1) == target ||
+        getBoundedPos(pos.x + 1, pos.y + 1) == target ||
+        getBoundedPos(pos.x - 1, pos.y + 1) == target ||
+        getBoundedPos(pos.x + 1, pos.y) == target ||
+        getBoundedPos(pos.x - 1, pos.y) == target ||
+        getBoundedPos(pos.x - 1, pos.y - 1) == target;
+
+}
+
+Position Bot::getBoundedPos(int x, int y) {
+    return Position((curMap->width + x) % curMap->width, (curMap->height + y) % curMap->height);
 }
