@@ -25,15 +25,17 @@ protected:
             shared_ptr<Bee> bee = (*beeCell)->getBee();
             Position pos = (*beeCell)->getPosition();
             if (bee->pollen >= minPollen * bee->count) {
-                Map::Path minPath = curMap.getPath(pos, queenBee->pos);
-                for (auto hiveCell = hiveCells.begin(); hiveCell != hiveCells.end(); ++hiveCell) {
-                    Map::Path path = curMap.getPath(pos, (*hiveCell)->getPosition());
-                    if (path.distance < minPath.distance) {
-                        minPath = path;
+                if (!isBesideHiveOrQueen(bee->pos)) {
+                    Map::Path minPath = curMap.getPath(pos, queenBee->pos);
+                    for (auto hiveCell = hiveCells.begin(); hiveCell != hiveCells.end(); ++hiveCell) {
+                        Map::Path path = curMap.getPath(pos, (*hiveCell)->getPosition());
+                        if (path.distance < minPath.distance) {
+                            minPath = path;
+                        }
                     }
+                    moves.push_back(
+                            Action(actionType::MOVE, pos, minPath.move, minPath.move - 1 /* Faces move direction. */));
                 }
-                moves.push_back(
-                        Action(actionType::MOVE, pos, minPath.move, minPath.move - 1 /* Faces move direction. */));
             } else {
                 Cell* firstFlower = flowerCells[0];
                 Map::Path minPath = curMap.getPath(pos, firstFlower->getPosition());
@@ -60,12 +62,12 @@ protected:
                 if (!nearHive((*flowerCell)->getPosition())) {
                     Position flowerPos = (*flowerCell)->getPosition();
                     bool beside = isBeside(queenPos, flowerPos);
-                    if (canCreateHive && isBeside(queenPos, flowerPos)) {
+                    if (canCreateHive && beside) {
                         pollenNotUsed -= HIVE_POLLEN_AMOUNT;
                         moves.push_back(Action(actionType::CREATE_HIVE));
                         creatingHive = true;
                         break;
-                    } else if (!beside) {
+                    } else if (!canCreateHive || !beside) {
                         flowerPaths.insert(curMap.getPath(queenPos, flowerPos));
                     }
                 }
