@@ -137,15 +137,16 @@ std::string Bot::serializeActions(std::vector<Action> actions) {
 }
 
 bool Bot::isBesideHiveOrQueen(Position pos) {
-    bool beside = isBeside(pos, queenBee->pos);
+    return isBeside(pos, queenBee->pos) || isBesideHive(pos);
+}
+
+bool Bot::isBesideHive(Position pos) {
     for (auto &hiveCell : hiveCells) {
-        if (beside) {
-            return beside;
-        } else {
-            beside = isBeside(pos, hiveCell->getPosition());
+        if (isBeside(pos, hiveCell->getPosition())) {
+            return true;
         }
     }
-    return beside;
+    return false;
 }
 
 bool Bot::isBeside(Position pos, Position target) {
@@ -153,10 +154,11 @@ bool Bot::isBeside(Position pos, Position target) {
         getBoundedPos(pos.x, pos.y + 1) == target ||
         getBoundedPos(pos.x, pos.y - 1) == target ||
         getBoundedPos(pos.x + 1, pos.y + 1) == target ||
+        getBoundedPos(pos.x + 1, pos.y - 1) == target ||
         getBoundedPos(pos.x - 1, pos.y + 1) == target ||
+        getBoundedPos(pos.x - 1, pos.y - 1) == target ||
         getBoundedPos(pos.x + 1, pos.y) == target ||
-        getBoundedPos(pos.x - 1, pos.y) == target ||
-        getBoundedPos(pos.x - 1, pos.y - 1) == target;
+        getBoundedPos(pos.x - 1, pos.y) == target;
 
 }
 

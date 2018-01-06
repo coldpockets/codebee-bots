@@ -3,7 +3,7 @@
 
 static const int NEUTRAL_ID = -1;
 static const int BEE_POLLEN_AMOUNT = 5;
-static const int HIVE_POLLEN_AMOUNT = 10;
+static const int HIVE_POLLEN_AMOUNT = 100;
 static const int MAX_BEES = 100;
 static const int MAX_POLLEN_FACTOR = 3;
 

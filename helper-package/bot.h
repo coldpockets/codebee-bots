@@ -24,6 +24,7 @@ protected:
     void sendTurn(std::vector<Action> moves);
 
     bool isBesideHiveOrQueen(Position pos);
+    bool isBesideHive(Position pos);
     bool isBeside(Position pos, Position target);
 
     Position getBoundedPos(int x, int y);

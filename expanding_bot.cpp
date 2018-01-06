@@ -63,7 +63,7 @@ protected:
             bool canCreateHive = curMap.map[queenPos.y][queenPos.x]->getPotency() == 0;
             random_shuffle(flowerCells.begin(), flowerCells.end());
             for (auto flowerCell = flowerCells.begin(); flowerCell != flowerCells.end(); ++flowerCell) {
-                if (!nearHive((*flowerCell)->getPosition())) {
+                if (!isBesideHive((*flowerCell)->getPosition())) {
                     Position flowerPos = (*flowerCell)->getPosition();
                     bool beside = isBeside(queenPos, flowerPos);
                     if (canCreateHive && beside) {
@@ -136,23 +136,6 @@ protected:
 private:
     const int minPollen;
     const float ratio;
-
-    bool nearHive(Position pos) {
-        int top = (pos.y + curMap->height - 1) % curMap->height;
-        int bot= (pos.y + 1) % curMap->height;
-        int left = (pos.x + curMap->width - 1) % curMap->width;
-        int right = (pos.x + 1) % curMap->width;
-
-        return curMap->map[top][left]->getOwnerId() == id ||
-               curMap->map[top][pos.x]->getOwnerId() == id ||
-               curMap->map[top][right]->getOwnerId() == id ||
-               curMap->map[pos.y][left]->getOwnerId() == id ||
-                curMap->map[pos.y][pos.x]->getOwnerId() == id ||
-               curMap->map[pos.y][right]->getOwnerId() == id ||
-               curMap->map[bot][left]->getOwnerId() == id ||
-               curMap->map[bot][pos.x]->getOwnerId() == id ||
-               curMap->map[bot][right]->getOwnerId() == id;
-    }
 };
 
 int main() {
