@@ -15,3 +15,5 @@ add_executable(attack_bot attack_bot.cpp helper-package/bot.cpp helper-package/m
 add_executable(expanding_bot expanding_bot.cpp helper-package/bot.cpp helper-package/map.cpp helper-package/cell.cpp)
 
 add_executable(balanced_bot balanced_bot.cpp helper-package/bot.cpp helper-package/map.cpp helper-package/cell.cpp)
+
+add_executable(smart_bot smart_bot.cpp helper-package/bot.cpp helper-package/map.cpp helper-package/cell.cpp)

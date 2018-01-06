@@ -13,9 +13,9 @@ using namespace std;
 
 fstream fs;
 
-class ExpandingBot : public Bot {
+class SmartBot : public Bot {
 public:
-    ExpandingBot(int minPollen, float ratio) : Bot("ExpandingBot"), minPollen(minPollen), ratio(ratio) { }
+    SmartBot(int minPollen, float ratio) : Bot("ExpandingBot"), minPollen(minPollen), ratio(ratio) { }
 
 protected:
     vector<Action> getMoves(int id, const Map& curMap) {
@@ -28,6 +28,7 @@ protected:
             if (bee->pollen >= minPollen * bee->count) {
                 if (!isBesideHiveOrQueen(bee->pos)) {
                     Map::Path minPath = curMap.getPath(pos, queenBee->pos);
+                    random_shuffle(hiveCells.begin(), hiveCells.end());
                     for (auto hiveCell = hiveCells.begin(); hiveCell != hiveCells.end(); ++hiveCell) {
                         Map::Path path = curMap.getPath(pos, (*hiveCell)->getPosition());
                         if (path.distance < minPath.distance) {
@@ -40,6 +41,7 @@ protected:
             } else {
                 Cell* firstFlower = flowerCells[0];
                 Map::Path minPath = curMap.getPath(pos, firstFlower->getPosition());
+                random_shuffle(flowerCells.begin(), flowerCells.end());
                 for (auto flowerCell = flowerCells.begin() + 1; flowerCell != flowerCells.end(); ++flowerCell) {
                     Map::Path path = curMap.getPath(pos, (*flowerCell)->getPosition());
                     if (path.distance < minPath.distance) {
@@ -59,6 +61,7 @@ protected:
             set<Map::Path> flowerPaths;
             bool creatingHive = false;
             bool canCreateHive = curMap.map[queenPos.y][queenPos.x]->getPotency() == 0;
+            random_shuffle(flowerCells.begin(), flowerCells.end());
             for (auto flowerCell = flowerCells.begin(); flowerCell != flowerCells.end(); ++flowerCell) {
                 if (!isBesideHive((*flowerCell)->getPosition())) {
                     Position flowerPos = (*flowerCell)->getPosition();
@@ -104,13 +107,27 @@ protected:
         }
 
         if (hiveCells.size() > 0) {
-            moves.push_back(
-                    Action(
-                            actionType::SPAWN,
-                            hiveCells[(rand() % hiveCells.size())]->getPosition(),
-                            pollenNotUsed / BEE_POLLEN_AMOUNT
-                    )
-            );
+            random_shuffle(hiveCells.begin(), hiveCells.end());
+            for (auto &hiveCell : hiveCells) {
+                if (pollenNotUsed - BEE_POLLEN_AMOUNT * MAX_BEES <= 0) {
+                    moves.push_back(
+                            Action(
+                                    actionType::SPAWN,
+                                    hiveCell->getPosition(),
+                                    pollenNotUsed / BEE_POLLEN_AMOUNT
+                            )
+                    );
+                    break;
+                } else {
+                    moves.push_back(
+                            Action(
+                                    actionType::SPAWN,
+                                    hiveCell->getPosition(),
+                                    MAX_BEES
+                            )
+                    );
+                }
+            }
         }
 
         return moves;
@@ -124,13 +141,13 @@ private:
 int main() {
     srand(time(0));
 
-    fs.open("expanding_bot_log.txt", fstream::out | fstream::trunc);
+    fs.open("smart_bot_log.txt", fstream::out | fstream::trunc);
 
     cout.sync_with_stdio(false);
 
-    ExpandingBot expandingBot = ExpandingBot(1, 30.0f);
+    SmartBot smartBot = SmartBot(1, 30.0f);
 
-    expandingBot.run();
+    smartBot.run();
 
     fs.close();
 }
