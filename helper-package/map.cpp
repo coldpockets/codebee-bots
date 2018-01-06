@@ -93,18 +93,27 @@ Map::Path Map::getPath(Position from, Position to) const {
     int rightDist = (width + to.x - from.x) % width;
     int leftDist = (width + from.x - to.x) % width;
 
+    Move move1 = move::STAY;
+    Move move2 = move::STAY;
     if (to.y != from.y) {
         if (downDist > upDist) {
-            path.move = move::UP;
+            move1 = move::UP;
         } else {
-            path.move = move::DOWN;
+            move1 = move::DOWN;
         }
-    } else if (to.x != from.x) {
+        path.move = move1;
+    }
+    if (to.x != from.x) {
         if (rightDist > leftDist) {
-            path.move = move::LEFT;
+            move2 = move::LEFT;
         } else {
-            path.move = move::RIGHT;
+            move2 = move::RIGHT;
         }
+        path.move = move2;
+    }
+
+    if (move1 != move::STAY && move2 != move::STAY) {
+        path.move = rand() % 2 == 0 ? move1 : move2;
     }
 
     path.distance = min(rightDist, leftDist) + min(downDist, upDist);
