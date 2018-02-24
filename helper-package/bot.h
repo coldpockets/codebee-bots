@@ -26,6 +26,8 @@ protected:
     bool isBesideHiveOrQueen(Position pos);
     bool isBesideHive(Position pos);
     bool isBeside(Position pos, Position target);
+    bool isBesideEnemy(Position pos);
+    bool hasEnemy(Position pos);
 
     Position getBoundedPos(int x, int y);
 

@@ -52,65 +52,51 @@ protected:
         }
 
         int pollenNotUsed = queenBee->pollen;
+        Position queenPos = queenBee->pos;
+        int posPotency = curMap.map[queenPos.y][queenPos.x]->getPotency();
+        // Create hive on spot
+        if (totalBees > ratio * hiveCells.size() && posPotency == 0) {
+            pollenNotUsed -= HIVE_POLLEN_AMOUNT;
+            moves.push_back(Action(actionType::CREATE_HIVE));
+        }
 
-        // Find closest flower that is not beside a hive if bees:hives ratio is greater than specified.
-        if (totalBees > ratio * hiveCells.size()) {
-            Position queenPos = queenBee->pos;
-            set<Map::Path> flowerPaths;
-            bool creatingHive = false;
-            bool canCreateHive = curMap.map[queenPos.y][queenPos.x]->getPotency() == 0;
-            for (auto flowerCell = flowerCells.begin(); flowerCell != flowerCells.end(); ++flowerCell) {
-                if (!isBesideHive((*flowerCell)->getPosition())) {
-                    Position flowerPos = (*flowerCell)->getPosition();
-                    bool beside = isBeside(queenPos, flowerPos);
-                    if (canCreateHive && beside) {
-                        pollenNotUsed -= HIVE_POLLEN_AMOUNT;
-                        moves.push_back(Action(actionType::CREATE_HIVE));
-                        creatingHive = true;
-                        break;
-                    } else if (!canCreateHive || !beside) {
-                        flowerPaths.insert(curMap.getPath(queenPos, flowerPos));
-                    }
-                }
-            }
-
-            // Move towards closest flower, or if on a flower, then move to a vacant spot if possible.
-            if (!creatingHive) {
-                for (auto path = flowerPaths.begin(); path != flowerPaths.end(); ++path) {
-                    if (path->distance == 0) {
-                        int top = (queenPos.y + curMap.height - 1) % curMap.height;
-                        int bot = (queenPos.y + 1) % curMap.height;
-                        int left = (queenPos.x + curMap.width - 1) % curMap.width;
-                        int right = (queenPos.x + 1) % curMap.width;
-                        if (curMap.map[queenPos.y][left]->getPotency() == 0) {
-                            moves.push_back(Action(actionType::MOVE_QUEEN, move::LEFT));
-                            break;
-                        } else if (curMap.map[top][queenPos.x]->getPotency() == 0) {
-                            moves.push_back(Action(actionType::MOVE_QUEEN, move::UP));
-                            break;
-                        } else if (curMap.map[queenPos.y][right]->getPotency() == 0) {
-                            moves.push_back(Action(actionType::MOVE_QUEEN, move::RIGHT));
-                            break;
-                        } else if (curMap.map[bot][queenPos.x]->getPotency() == 0) {
-                            moves.push_back(Action(actionType::MOVE_QUEEN, move::DOWN));
-                            break;
-                        }
-                    } else {
-                        moves.push_back(Action(actionType::MOVE_QUEEN, path->move));
-                        break;
-                    }
-                }
+        // If queen is on hive or flower, move to an open spot.
+        if (posPotency > 0 || curMap.map[queenPos.y][queenPos.x]->getOwnerId() == id) {
+            if (isEmpty(getBoundedPos(queenPos.x + 1, queenPos.y))) {
+                moves.push_back(Action(actionType::MOVE_QUEEN, move::RIGHT));
+            } else if (isEmpty(getBoundedPos(queenPos.x, queenPos.y + 1))) {
+                moves.push_back(Action(actionType::MOVE_QUEEN, move::DOWN));
+            } else if (isEmpty(getBoundedPos(queenPos.x - 1, queenPos.y))) {
+                moves.push_back(Action(actionType::MOVE_QUEEN, move::LEFT));
+            } else if (isEmpty(getBoundedPos(queenPos.x, queenPos.y - 1))) {
+                moves.push_back(Action(actionType::MOVE_QUEEN, move::UP));
+            } else {
+                // Everywhere is blocked so just move to a random movement that is not STAY.
+                moves.push_back(Action(actionType::MOVE_QUEEN, (rand() % 4) + 1));
             }
         }
 
         if (hiveCells.size() > 0) {
-            moves.push_back(
-                    Action(
-                            actionType::SPAWN,
-                            hiveCells[(rand() % hiveCells.size())]->getPosition(),
-                            pollenNotUsed / BEE_POLLEN_AMOUNT
-                    )
-            );
+            int totalBeesPerHive = (pollenNotUsed / BEE_POLLEN_AMOUNT) / hiveCells.size();
+            for (auto &hiveCell : hiveCells) {
+                if (totalBeesPerHive > 100) {
+                    moves.push_back(
+                            Action(
+                                    actionType::SPAWN,
+                                    hiveCell->getPosition(),
+                                    MAX_BEES
+                            )
+                    );
+                } else {
+                    moves.push_back(
+                            Action(
+                                    actionType::SPAWN,
+                                    hiveCell->getPosition(),
+                                    totalBeesPerHive
+                            )
+                    );
+                }
+            }
         }
 
         return moves;
@@ -119,6 +105,11 @@ protected:
 private:
     const int minPollen;
     const float ratio;
+
+    // Detects when a spot has no hive or flower on it.
+    bool isEmpty(Position pos) {
+        return curMap->map[pos.y][pos.x]->getPotency() == 0 && curMap->map[pos.y][pos.x]->getOwnerId() == NEUTRAL_ID;
+    }
 };
 
 int main() {

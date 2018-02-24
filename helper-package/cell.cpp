@@ -7,6 +7,14 @@ std::shared_ptr<Bee> Cell::getBee() const {
     return bee;
 }
 
+const int Cell::getBeeBotId() const {
+    if (bee == nullptr) {
+        return NEUTRAL_ID;
+    } else {
+        return bee->botId;
+    }
+}
+
 const int Cell::getPotency() const {
     return potency;
 }

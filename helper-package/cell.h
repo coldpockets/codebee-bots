@@ -12,6 +12,7 @@ public:
     Cell(Position pos, Flower p);
 
     std::shared_ptr<Bee> getBee() const;
+    const int getBeeBotId() const;
     const int getPotency() const;
     const Position getPosition() const;
     const int getOwnerId() const;

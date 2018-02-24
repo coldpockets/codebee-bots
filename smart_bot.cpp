@@ -15,7 +15,7 @@ fstream fs;
 
 class SmartBot : public Bot {
 public:
-    SmartBot(int minPollen, float ratio) : Bot("ExpandingBot"), minPollen(minPollen), ratio(ratio) { }
+    SmartBot(int minPollen, float ratio) : Bot("SmartBot"), minPollen(minPollen), ratio(ratio) { }
 
 protected:
     vector<Action> getMoves(int id, const Map& curMap) {
@@ -54,76 +54,120 @@ protected:
         }
 
         int pollenNotUsed = queenBee->pollen;
+        Position queenPos = queenBee->pos;
 
-        // Find closest flower that is not beside a hive if bees:hives ratio is greater than specified.
-        if (totalBees > ratio * hiveCells.size()) {
-            Position queenPos = queenBee->pos;
-            set<Map::Path> flowerPaths;
-            bool creatingHive = false;
-            bool canCreateHive = curMap.map[queenPos.y][queenPos.x]->getPotency() == 0;
-            random_shuffle(flowerCells.begin(), flowerCells.end());
-            for (auto flowerCell = flowerCells.begin(); flowerCell != flowerCells.end(); ++flowerCell) {
-                if (!isBesideHive((*flowerCell)->getPosition())) {
-                    Position flowerPos = (*flowerCell)->getPosition();
-                    bool beside = isBeside(queenPos, flowerPos);
-                    if (canCreateHive && beside) {
-                        pollenNotUsed -= HIVE_POLLEN_AMOUNT;
-                        moves.push_back(Action(actionType::CREATE_HIVE));
-                        creatingHive = true;
-                        break;
-                    } else if (!canCreateHive || !beside) {
-                        flowerPaths.insert(curMap.getPath(queenPos, flowerPos));
-                    }
-                }
+        // Check if queen is beside an enemy, and move away from enemies if so.
+        set<Move> availableMoves = { move::RIGHT, move::DOWN, move::LEFT, move::UP };
+        if (hasEnemy(getBoundedPos(queenPos.x + 1, queenPos.y))) {
+            availableMoves.erase(move::RIGHT);
+            availableMoves.erase(move::DOWN);
+            availableMoves.erase(move::UP);
+        }
+        if (hasEnemy(getBoundedPos(queenPos.x + 1, queenPos.y + 1))) {
+            availableMoves.erase(move::RIGHT);
+            availableMoves.erase(move::DOWN);
+        }
+        if (hasEnemy(getBoundedPos(queenPos.x + 1, queenPos.y - 1))) {
+            availableMoves.erase(move::RIGHT);
+            availableMoves.erase(move::UP);
+        }
+        if (hasEnemy(getBoundedPos(queenPos.x - 1, queenPos.y))) {
+            availableMoves.erase(move::LEFT);
+            availableMoves.erase(move::DOWN);
+            availableMoves.erase(move::UP);
+        }
+        if (hasEnemy(getBoundedPos(queenPos.x - 1, queenPos.y + 1))) {
+            availableMoves.erase(move::LEFT);
+            availableMoves.erase(move::DOWN);
+        }
+        if (hasEnemy(getBoundedPos(queenPos.x - 1, queenPos.y - 1))) {
+            availableMoves.erase(move::LEFT);
+            availableMoves.erase(move::UP);
+        }
+        if (hasEnemy(getBoundedPos(queenPos.x, queenPos.y + 1))) {
+            availableMoves.erase(move::LEFT);
+            availableMoves.erase(move::RIGHT);
+            availableMoves.erase(move::UP);
+        }
+        if (hasEnemy(getBoundedPos(queenPos.x, queenPos.y - 1))) {
+            availableMoves.erase(move::LEFT);
+            availableMoves.erase(move::RIGHT);
+            availableMoves.erase(move::DOWN);
+        }
+        if (availableMoves.size() < 4) {
+            // Case when you won't escape an enemy no matter where you move.
+            if (availableMoves.size() == 0) {
+                moves.push_back(Action(actionType::MOVE_QUEEN, (rand() % 4) + 1));
+            } else {
+                vector<Move> shuffledMoves(availableMoves.begin(), availableMoves.end());
+                random_shuffle(shuffledMoves.begin(), shuffledMoves.end());
+                moves.push_back(Action(actionType::MOVE_QUEEN, *shuffledMoves.begin()));
+            }
+        } else {
+            int posPotency = curMap.map[queenPos.y][queenPos.x]->getPotency();
+            // Create hive on spot
+            if (totalBees > ratio * hiveCells.size() && posPotency == 0) {
+                pollenNotUsed -= HIVE_POLLEN_AMOUNT;
+                moves.push_back(Action(actionType::CREATE_HIVE));
             }
 
-            // Move towards closest flower, or if on a flower, then move to a vacant spot if possible.
-            if (!creatingHive) {
-                for (auto path = flowerPaths.begin(); path != flowerPaths.end(); ++path) {
-                    if (path->distance == 0) {
-                        int top = (queenPos.y + curMap.height - 1) % curMap.height;
-                        int bot = (queenPos.y + 1) % curMap.height;
-                        int left = (queenPos.x + curMap.width - 1) % curMap.width;
-                        int right = (queenPos.x + 1) % curMap.width;
-                        if (curMap.map[queenPos.y][left]->getPotency() == 0) {
-                            moves.push_back(Action(actionType::MOVE_QUEEN, move::LEFT));
-                            break;
-                        } else if (curMap.map[top][queenPos.x]->getPotency() == 0) {
-                            moves.push_back(Action(actionType::MOVE_QUEEN, move::UP));
-                            break;
-                        } else if (curMap.map[queenPos.y][right]->getPotency() == 0) {
-                            moves.push_back(Action(actionType::MOVE_QUEEN, move::RIGHT));
-                            break;
-                        } else if (curMap.map[bot][queenPos.x]->getPotency() == 0) {
-                            moves.push_back(Action(actionType::MOVE_QUEEN, move::DOWN));
-                            break;
-                        }
-                    } else {
-                        moves.push_back(Action(actionType::MOVE_QUEEN, path->move));
+            // If queen is on hive or flower, move to an open spot.
+            if (posPotency > 0 || curMap.map[queenPos.y][queenPos.x]->getOwnerId() == id) {
+                Move movements[] = {move::RIGHT, move::DOWN, move::LEFT, move::UP};
+                random_shuffle(begin(movements), end(movements));
+
+                bool moved = false;
+                for (int i = 0; i < 4; ++i) {
+                    if (movements[i] == move::RIGHT &&
+                        isEmpty(getBoundedPos(queenPos.x + 1, queenPos.y)) &&
+                        !hasEnemy(getBoundedPos(queenPos.x + 1, queenPos.y))) {
+                        moved = true;
+                        moves.push_back(Action(actionType::MOVE_QUEEN, move::RIGHT));
+                        break;
+                    } else if (movements[i] == move::DOWN &&
+                               isEmpty(getBoundedPos(queenPos.x, queenPos.y + 1)) &&
+                               !hasEnemy(getBoundedPos(queenPos.x, queenPos.y + 1))) {
+                        moved = true;
+                        moves.push_back(Action(actionType::MOVE_QUEEN, move::DOWN));
+                        break;
+                    } else if (movements[i] == move::LEFT &&
+                               isEmpty(getBoundedPos(queenPos.x - 1, queenPos.y)) &&
+                               !hasEnemy(getBoundedPos(queenPos.x - 1, queenPos.y))) {
+                        moved = true;
+                        moves.push_back(Action(actionType::MOVE_QUEEN, move::LEFT));
+                        break;
+                    } else if (movements[i] == move::UP &&
+                               isEmpty(getBoundedPos(queenPos.x, queenPos.y - 1)) &&
+                               !hasEnemy(getBoundedPos(queenPos.x, queenPos.y - 1))) {
+                        moved = true;
+                        moves.push_back(Action(actionType::MOVE_QUEEN, move::UP));
                         break;
                     }
+                }
+                // Everywhere is blocked so just move to a random movement that is not STAY.
+                if (!moved) {
+                    moves.push_back(Action(actionType::MOVE_QUEEN, (rand() % 4) + 1));
                 }
             }
         }
 
         if (hiveCells.size() > 0) {
-            random_shuffle(hiveCells.begin(), hiveCells.end());
+            int totalBeesPerHive = (pollenNotUsed / BEE_POLLEN_AMOUNT) / hiveCells.size();
             for (auto &hiveCell : hiveCells) {
-                if (pollenNotUsed - BEE_POLLEN_AMOUNT * MAX_BEES <= 0) {
-                    moves.push_back(
-                            Action(
-                                    actionType::SPAWN,
-                                    hiveCell->getPosition(),
-                                    pollenNotUsed / BEE_POLLEN_AMOUNT
-                            )
-                    );
-                    break;
-                } else {
+                if (totalBeesPerHive > 100) {
                     moves.push_back(
                             Action(
                                     actionType::SPAWN,
                                     hiveCell->getPosition(),
                                     MAX_BEES
+                            )
+                    );
+                } else {
+                    moves.push_back(
+                            Action(
+                                    actionType::SPAWN,
+                                    hiveCell->getPosition(),
+                                    totalBeesPerHive
                             )
                     );
                 }
@@ -136,6 +180,11 @@ protected:
 private:
     const int minPollen;
     const float ratio;
+
+    // Detects when a spot has no hive or flower on it.
+    bool isEmpty(Position pos) {
+        return curMap->map[pos.y][pos.x]->getPotency() == 0 && curMap->map[pos.y][pos.x]->getOwnerId() == NEUTRAL_ID;
+    }
 };
 
 int main() {

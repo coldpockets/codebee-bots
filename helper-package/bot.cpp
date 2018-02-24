@@ -7,6 +7,7 @@
 #include "bot.h"
 #include "json.hpp"
 #include "bee.h"
+#include "constants.h"
 
 using namespace std;
 using namespace nlohmann;
@@ -159,7 +160,23 @@ bool Bot::isBeside(Position pos, Position target) {
         getBoundedPos(pos.x - 1, pos.y - 1) == target ||
         getBoundedPos(pos.x + 1, pos.y) == target ||
         getBoundedPos(pos.x - 1, pos.y) == target;
+}
 
+bool Bot::isBesideEnemy(Position pos) {
+    return hasEnemy(pos) ||
+           hasEnemy(getBoundedPos(pos.x + 1, pos.y)) ||
+           hasEnemy(getBoundedPos(pos.x + 1, pos.y + 1)) ||
+           hasEnemy(getBoundedPos(pos.x + 1, pos.y - 1)) ||
+           hasEnemy(getBoundedPos(pos.x - 1, pos.y)) ||
+           hasEnemy(getBoundedPos(pos.x - 1, pos.y + 1)) ||
+           hasEnemy(getBoundedPos(pos.x - 1, pos.y - 1)) ||
+           hasEnemy(getBoundedPos(pos.x, pos.y + 1)) ||
+           hasEnemy(getBoundedPos(pos.x, pos.y - 1));
+}
+
+bool Bot::hasEnemy(Position pos) {
+    int cellBotId = curMap->map[pos.y][pos.x]->getBeeBotId();
+    return cellBotId != NEUTRAL_ID && cellBotId != id;
 }
 
 Position Bot::getBoundedPos(int x, int y) {
