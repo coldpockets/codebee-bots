@@ -33,6 +33,23 @@ public:
     int width;
     Cell*** map;
     std::vector<std::shared_ptr<QueenBee> > queenBees;
+
+private:
+    static const int STATE_BEES_INDEX = 0;
+    static const int STATE_QUEENS_INDEX = 1;
+    static const int STATE_HIVES_INDEX = 2;
+
+    static const int INSECT_X_INDEX = 0;
+    static const int INSECT_Y_INDEX = 1;
+    static const int INSECT_ID_INDEX = 2;
+    static const int INSECT_BOT_ID_INDEX = 3;
+    static const int INSECT_FACE_INDEX = 4;
+    static const int INSECT_POLLEN_INDEX = 5;
+    static const int INSECT_COUNT_INDEX = 6;
+
+    static const int HIVE_X_INDEX = 0;
+    static const int HIVE_Y_INDEX = 1;
+    static const int HIVE_OWNER_ID_INDEX = 2;
 };
 
 #endif //CODEBEE_GAME_MAP_H

@@ -19,8 +19,7 @@ Map::Map(string pollenMap) {
         json row = pMap.at(y);
         map[y] = new Cell*[width];
         for (int x = 0; x < width; ++x) {
-            json cell = row.at(x);
-            map[y][x] = new Cell(Position(x, y), cell.at("p").get<Flower>());
+            map[y][x] = new Cell(Position(x, y), row.at(x).get<Flower>());
         }
     }
 }
@@ -39,9 +38,9 @@ Map::~Map() {
 
 void Map::updateMap(std::string newState) {
     json pState = json::parse(newState);
-    json pBees = pState.at("b");
-    json pQueens = pState.at("q");
-    json pHives = pState.at("h");
+    json pBees = pState.at(STATE_BEES_INDEX);
+    json pQueens = pState.at(STATE_QUEENS_INDEX);
+    json pHives = pState.at(STATE_HIVES_INDEX);
 
     // Clear all bees and hives.
     for (int y = 0; y < height; ++y) {
@@ -52,15 +51,15 @@ void Map::updateMap(std::string newState) {
     queenBees.clear();
 
     // Set bees.
-    for (auto pInsect : pBees) {
+    for (auto pBee : pBees) {
         shared_ptr<Bee> bee = make_shared<Bee>(
-                pInsect.at("i").get<int>(),
-                pInsect.at("b").get<int>(),
-                Position(pInsect.at("x").get<int>(),
-                         pInsect.at("y").get<int>()),
-                pInsect.at("f").get<Face>(),
-                pInsect.at("p").get<int>(),
-                pInsect.at("c").get<int>()
+                pBee.at(INSECT_ID_INDEX).get<int>(),
+                pBee.at(INSECT_BOT_ID_INDEX).get<int>(),
+                Position(pBee.at(INSECT_X_INDEX).get<int>(),
+                         pBee.at(INSECT_Y_INDEX).get<int>()),
+                pBee.at(INSECT_FACE_INDEX).get<Face>(),
+                pBee.at(INSECT_POLLEN_INDEX).get<int>(),
+                pBee.at(INSECT_COUNT_INDEX).get<int>()
         );
         Position pos = bee->pos;
         map[pos.y][pos.x]->setBee(bee);
@@ -69,18 +68,19 @@ void Map::updateMap(std::string newState) {
     // Set queen bees.
     for (auto pQueen : pQueens) {
         queenBees.push_back(make_shared<QueenBee>(
-                pQueen.at("i").get<int>(),
-                pQueen.at("b").get<int>(),
-                Position(pQueen.at("x").get<int>(),
-                         pQueen.at("y").get<int>()),
-                pQueen.at("f").get<Face>(),
-                pQueen.at("p").get<int>()
+                pQueen.at(INSECT_ID_INDEX).get<int>(),
+                pQueen.at(INSECT_BOT_ID_INDEX).get<int>(),
+                Position(pQueen.at(INSECT_X_INDEX).get<int>(),
+                         pQueen.at(INSECT_Y_INDEX).get<int>()),
+                pQueen.at(INSECT_FACE_INDEX).get<Face>(),
+                pQueen.at(INSECT_POLLEN_INDEX).get<int>()
         ));
     }
 
     // Set hives.
     for (auto pHive : pHives) {
-        map[pHive.at("y").get<int>()][pHive.at("x").get<int>()]->setOwnerId(pHive.at("o").get<int>());
+        map[pHive.at(HIVE_Y_INDEX).get<int>()][pHive.at(HIVE_X_INDEX).get<int>()]
+                ->setOwnerId(pHive.at(HIVE_OWNER_ID_INDEX).get<int>());
     }
 }
 
