@@ -28,8 +28,6 @@ void Bot::run() {
 
     int turn = 1;
     while(true) {
-        moves.clear();
-
         fs << "Start of turn " << turn << endl;
 
         getTurn(*curMap);
