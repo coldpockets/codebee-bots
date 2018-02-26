@@ -11,11 +11,11 @@ class RandomBot extends Bot {
     }
 
     getActions() {
-        const moves = [];
+        const actions = [];
 
         for (let beeCell of this.beeCells) {
             const move = Math.floor(Math.random() * 5);
-            moves.push(new Action(
+            actions.push(new Action(
                 ACTION.MOVE,
                 move,
                 move > 0 ? move - 1 : beeCell.bee.face,
@@ -23,7 +23,7 @@ class RandomBot extends Bot {
             ));
         }
 
-        return moves;
+        return actions;
     }
 }
 
