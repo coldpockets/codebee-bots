@@ -7,4 +7,4 @@ exports.Position = class Position {
     equals(pos) {
         return this.x == pos.x && this.y == pos.y;
     }
-}
+};

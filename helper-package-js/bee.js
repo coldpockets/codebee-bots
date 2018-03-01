@@ -5,4 +5,4 @@ exports.Bee = class Bee extends Insect {
         super(id, botId, pos, face, pollen);
         this.count = count;
     }
-}
+};

@@ -13,6 +13,7 @@ class RandomBot extends Bot {
     getActions() {
         const actions = [];
 
+        // Make all bees move randomly.
         for (let beeCell of this.beeCells) {
             const move = Math.floor(Math.random() * 5);
             actions.push(new Action({

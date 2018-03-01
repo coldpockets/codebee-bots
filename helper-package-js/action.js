@@ -8,4 +8,4 @@ exports.Action = class Action {
         this.face = options.face || FACE.UP;
         this.pos = options.pos || new Position();
     }
-}
+};

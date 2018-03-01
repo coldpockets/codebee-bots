@@ -22,6 +22,7 @@ class HarvesterBot2 extends Bot {
             const bee = beeCell.bee;
             const pos = beeCell.pos;
             if (bee.pollen >= bee.count) {
+                // If the bees have pollen, move to closest queen or hive.
                 if (!this.isBesideHiveOrQueen(pos)) {
                     let minPath = this.getMinPath(pos, this.queenBee.pos);
                     for (let hiveCell of this.hiveCells) {
@@ -38,6 +39,7 @@ class HarvesterBot2 extends Bot {
                     }));
                 }
             } else {
+                // Move to closest flower to collect pollen.
                 const firstFlower = this.flowerCells[0];
                 let minPath = this.getMinPath(pos, firstFlower.pos);
                 for (let i = 1; i < this.flowerCells.length; ++i) {

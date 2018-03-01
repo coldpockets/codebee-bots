@@ -168,4 +168,4 @@ exports.Bot = class Bot {
     getMinPath(from, to) {
         return this.currMap.getPath(from, to);
     }
-}
+};

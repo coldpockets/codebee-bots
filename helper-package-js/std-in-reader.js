@@ -38,4 +38,4 @@ exports.StdInReader = class StdInReader {
         this._returnLines();
         return promise;
     }
-}
+};

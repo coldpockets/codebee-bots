@@ -6,4 +6,4 @@ exports.Insect = class Insect {
         this.face = face;
         this.pollen = pollen;
     }
-}
+};
