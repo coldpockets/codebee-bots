@@ -97,7 +97,7 @@ class ExpandingBot extends Bot {
                 actions.push(new Action({
                     type: ACTION.MOVE_QUEEN,
                     move: move,
-                    face: move - 1,
+                    face: move - 1 /* Faces move direction. */,
                 }));
             }
         }

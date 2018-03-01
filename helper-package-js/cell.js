@@ -14,6 +14,6 @@ exports.Cell = class Cell {
     }
 
     getBeeBotId() {
-        return bee ? bee.botId : NEUTRAL_ID;
+        return this.bee ? this.bee.botId : NEUTRAL_ID;
     }
 };
