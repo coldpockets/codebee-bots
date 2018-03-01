@@ -180,3 +180,7 @@ bool Bot::hasEnemy(Position pos) {
 Position Bot::getBoundedPos(int x, int y) {
     return Position((curMap->width + x) % curMap->width, (curMap->height + y) % curMap->height);
 }
+
+Map::Path Bot::getMinPath(Position from, Position to) {
+    return curMap->getPath(from, to);
+}

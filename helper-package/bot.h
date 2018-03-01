@@ -30,6 +30,7 @@ protected:
     bool hasEnemy(Position pos);
 
     Position getBoundedPos(int x, int y);
+    Map::Path getMinPath(Position from, Position to);
 
     virtual std::vector<Action> getMoves(int id, const Map& curMap) = 0;
 

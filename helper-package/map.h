@@ -27,7 +27,7 @@ public:
     Map(std::string pollenMap);
     ~Map();
     void updateMap(std::string newState);
-    Path getPath(Position a, Position b) const;
+    Path getPath(Position from, Position to) const;
 
     int height;
     int width;

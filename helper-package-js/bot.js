@@ -57,7 +57,7 @@ exports.Bot = class Bot {
         const currState = await this.getString();
         this.currMap.updateMap(currState);
 
-        this.queenBee = this.currMap.queenBees.find(bee => bee.id == this.id);
+        this.queenBee = this.currMap.queenBees.find(bee => bee.botId == this.id);
         this.beeCells.length = 0;
         this.hiveCells.length = 0;
         this.totalBees = 0;
@@ -120,10 +120,10 @@ exports.Bot = class Bot {
     }
 
     isBesideHiveOrQueen(pos) {
-        return this.isBesideHiveOrQueen(pos, this.queenBee.pos) || this.isBesideHive(pos);
+        return this.isBeside(pos, this.queenBee.pos) || this.isBesideHive(pos);
     }
 
-    isBesdieHive(pos) {
+    isBesideHive(pos) {
         for (let hiveCell of this.hiveCells) {
             if (this.isBeside(pos, hiveCell.pos)) {
                 return true;
@@ -162,6 +162,10 @@ exports.Bot = class Bot {
     }
 
     getBoundedPos(x, y) {
-        return new Position((this.curMap.width + x) % this.curMap.width, (this.curMap.height + y) % this.curMap.height);
+        return new Position((this.currMap.width + x) % this.currMap.width, (this.currMap.height + y) % this.currMap.height);
+    }
+
+    getMinPath(from, to) {
+        return this.currMap.getPath(from, to);
     }
 }

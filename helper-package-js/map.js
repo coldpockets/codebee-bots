@@ -27,6 +27,17 @@ const JSON_INDICES = Object.freeze({
     }),
 });
 
+const Path = class Path {
+    constructor(distance, move) {
+        this.distance = distance || 0;
+        this.move = move || MOVE.UP;
+    }
+
+    // Less than overrided??
+};
+
+exports.Path = Path;
+
 exports.Map = class Map {
     constructor(pollenMap) {
         const pMap = JSON.parse(pollenMap);
@@ -90,11 +101,10 @@ exports.Map = class Map {
 
     getPath(from, to) {
         const path = new Path();
-
-        const downDist = (this.height + to.y - from.y) % height;
-        const upDist = (this.height + from.y - to.y) % height;
-        const rightDist = (this.width + to.x - from.x) % width;
-        const leftDist = (width + from.x - to.x) % width;
+        const downDist = (this.height + to.y - from.y) % this.height;
+        const upDist = (this.height + from.y - to.y) % this.height;
+        const rightDist = (this.width + to.x - from.x) % this.width;
+        const leftDist = (this.width + from.x - to.x) % this.width;
 
         let move1 = MOVE.STAY;
         let move2 = MOVE.STAY;
@@ -119,17 +129,8 @@ exports.Map = class Map {
             path.move = Math.floor((Math.random() * 2)) == 0 ? move1 : move2;
         }
 
-        path.distance = min(rightDist, leftDist) + min(downDist, upDist);
+        path.distance = Math.min(rightDist, leftDist) + Math.min(downDist, upDist);
 
         return path;
     }
-}
-
-exports.Path = class Path {
-    constructor(distance = 0, move = MOVE.UP) {
-        this.distance = distance;
-        this.move = move;
-    }
-
-    // Less than overrided??
-}
+};
