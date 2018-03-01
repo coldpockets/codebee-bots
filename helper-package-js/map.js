@@ -28,9 +28,9 @@ const JSON_INDICES = Object.freeze({
 });
 
 const Path = class Path {
-    constructor(distance, move) {
-        this.distance = distance || 0;
-        this.move = move || MOVE.UP;
+    constructor(distance = 0, move = MOVE.UP) {
+        this.distance = distance;
+        this.move = move;
     }
 
     // Less than overrided??

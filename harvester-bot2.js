@@ -5,9 +5,14 @@ const { Action } = require('./helper-package-js/action');
 const { Bot } = require('./helper-package-js/bot');
 const { Position } = require('./helper-package-js/position');
 
-class HarvesterBot extends Bot {
+const fs = require('fs');
+const stream = fs.createWriteStream('test.txt');
+
+class HarvesterBot2 extends Bot {
     constructor() {
-        super("HarvesterBot");
+        super("HarvesterBot2");
+
+        this.spawnedHive = false;
     }
 
     getActions() {
@@ -18,12 +23,18 @@ class HarvesterBot extends Bot {
             const pos = beeCell.pos;
             if (bee.pollen >= bee.count) {
                 if (!this.isBesideHiveOrQueen(pos)) {
-                    const path = this.getMinPath(pos, this.queenBee.pos);
+                    let minPath = this.getMinPath(pos, this.queenBee.pos);
+                    for (let hiveCell of this.hiveCells) {
+                        let path = this.getMinPath(pos, hiveCell.pos);
+                        if (path.distance < minPath.distance) {
+                            minPath = path;
+                        }
+                    }
                     actions.push(new Action({
                         type: ACTION.MOVE,
                         pos: pos,
-                        move: path.move,
-                        face: path.move - 1 /* Faces move direction. */,
+                        move: minPath.move,
+                        face: minPath.move - 1 /* Faces move direction. */,
                     }));
                 }
             } else {
@@ -44,11 +55,26 @@ class HarvesterBot extends Bot {
             }
         }
 
+        const queenPos = this.queenBee.pos;
+
+        if (!this.spawnedHive && this.queenBee.pollen >= CONSTANTS.HIVE_POLLEN_AMOUNT) {
+            actions.push(new Action({
+                type: ACTION.CREATE_HIVE,
+            }));
+            this.spawnedHive = true;
+        } else if (this.hiveCells.length > 0 && this.queenBee.pollen >= CONSTANTS.BEE_POLLEN_AMOUNT) {
+            actions.push(new Action({
+                type: ACTION.SPAWN,
+                pos: this.hiveCells[0].pos,
+                amount: this.queenBee.pollen / CONSTANTS.BEE_POLLEN_AMOUNT,
+            }));
+        }
+
         return actions;
     }
 }
 
 (async function main() {
-    const harvesterBot = new HarvesterBot();
-    await harvesterBot.run();
+    const harvesterBot2 = new HarvesterBot2();
+    await harvesterBot2.run();
 })();

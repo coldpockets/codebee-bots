@@ -15,12 +15,12 @@ class RandomBot extends Bot {
 
         for (let beeCell of this.beeCells) {
             const move = Math.floor(Math.random() * 5);
-            actions.push(new Action(
-                ACTION.MOVE,
-                move,
-                move > 0 ? move - 1 : beeCell.bee.face,
-                beeCell.pos,
-            ));
+            actions.push(new Action({
+                type: ACTION.MOVE,
+                pos: beeCell.pos,
+                move: move,
+                face: move > 0 ? move - 1 : beeCell.bee.face,
+            }));
         }
 
         return actions;
