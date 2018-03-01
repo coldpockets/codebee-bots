@@ -5,9 +5,6 @@ const { Action } = require('./helper-package-js/action');
 const { Bot } = require('./helper-package-js/bot');
 const { Position } = require('./helper-package-js/position');
 
-const fs = require('fs');
-const stream = fs.createWriteStream('test.txt');
-
 class ExpandingBot extends Bot {
     constructor() {
         super("ExpandingBot");
@@ -59,7 +56,6 @@ class ExpandingBot extends Bot {
         const queenPos = this.queenBee.pos;
         let pollenNotUsed = this.queenBee.pollen;
         let posPotency = this.currMap.map[queenPos.y][queenPos.x].potency;
-        stream.write(posPotency + '\n');
 
         // Create hive if the bee to hive ratio is higher than what we want.
         if (this.totalBees > this.beeToHiveRatio * this.hiveCells.length && posPotency == FLOWER.NONE) {

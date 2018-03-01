@@ -5,9 +5,6 @@ const { Action } = require('./helper-package-js/action');
 const { Bot } = require('./helper-package-js/bot');
 const { Position } = require('./helper-package-js/position');
 
-const fs = require('fs');
-const stream = fs.createWriteStream('test.txt');
-
 class HarvesterBot2 extends Bot {
     constructor() {
         super("HarvesterBot2");
