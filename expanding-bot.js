@@ -5,10 +5,11 @@ const { Action } = require('./helper-package-js/action');
 const { Bot } = require('./helper-package-js/bot');
 const { Position } = require('./helper-package-js/position');
 
+const BEES_TO_HIVE_RATIO = 30;
+
 class ExpandingBot extends Bot {
     constructor() {
         super("ExpandingBot");
-        this.beeToHiveRatio = 30;
     }
 
     getActions() {
@@ -57,8 +58,8 @@ class ExpandingBot extends Bot {
         let pollenNotUsed = this.queenBee.pollen;
         let posPotency = this.currMap.map[queenPos.y][queenPos.x].potency;
 
-        // Create hive if the bee to hive ratio is higher than what we want.
-        if (this.totalBees > this.beeToHiveRatio * this.hiveCells.length && posPotency == FLOWER.NONE) {
+        // Create hive if the bees to hive ratio is higher than what we want.
+        if (this.totalBees > BEES_TO_HIVE_RATIO * this.hiveCells.length && posPotency == FLOWER.NONE) {
             pollenNotUsed -= CONSTANTS.HIVE_POLLEN_AMOUNT;
             actions.push(new Action({
                 type: ACTION.CREATE_HIVE,
@@ -66,7 +67,7 @@ class ExpandingBot extends Bot {
         }
 
         // If queen is on a hive or flower, move to an open spot.
-        if (posPotency > FLOWER.NONE || this.currMap.map[queenPos.y][queenPos.x].ownerId == this.id) {
+        if (!this.isEmpty(queenPos)) {
             if (this.isEmpty(this.getBoundedPos(queenPos.x + 1, queenPos.y))) {
                 actions.push(new Action({
                     type: ACTION.MOVE_QUEEN,
@@ -103,8 +104,10 @@ class ExpandingBot extends Bot {
         }
 
         if (this.hiveCells.length > 0) {
-            let totalBeesPerHive = Math.floor(Math.floor(pollenNotUsed / CONSTANTS.BEE_POLLEN_AMOUNT) / this.hiveCells.length);
+            const totalBeesPerHive =
+                Math.floor(Math.floor(pollenNotUsed / CONSTANTS.BEE_POLLEN_AMOUNT) / this.hiveCells.length);
             for (let hiveCell of this.hiveCells) {
+                // Makes sure we don't overspawn bees.
                 if (totalBeesPerHive > CONSTANTS.MAX_BEES) {
                     actions.push(new Action({
                         type: ACTION.SPAWN,

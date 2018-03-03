@@ -2,7 +2,6 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <fstream>
 
 #include "bot.h"
 #include "json.hpp"
@@ -11,8 +10,6 @@
 
 using namespace std;
 using namespace nlohmann;
-
-extern fstream fs;
 
 Bot::Bot(string name) : name(name) {
     getInit(id, curMap);
@@ -28,19 +25,11 @@ void Bot::run() {
 
     int turn = 1;
     while(true) {
-        fs << "Start of turn " << turn << endl;
-
         getTurn(*curMap);
-
-        fs << "Map retrieved for turn" << endl;
 
         moves = getMoves(id, *curMap);
 
-        fs << "Moves calculated for turn" << endl;
-
         sendTurn(moves);
-
-        fs << "End of turn " << turn << endl;
 
         turn++;
     }
@@ -93,7 +82,6 @@ void Bot::getTurn(Map& curMap) {
 
 void Bot::sendTurn(std::vector<Action> moves) {
     string strMoves = serializeActions(moves);
-    fs << "Moves:" << endl << strMoves << endl;
     sendString(strMoves);
 }
 

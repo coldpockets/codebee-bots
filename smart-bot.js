@@ -5,10 +5,11 @@ const { Action } = require('./helper-package-js/action');
 const { Bot } = require('./helper-package-js/bot');
 const { Position } = require('./helper-package-js/position');
 
+const BEES_TO_HIVE_RATIO = 30;
+
 class SmartBot extends Bot {
     constructor() {
         super("SmartBot");
-        this.beeToHiveRatio = 30;
     }
 
     getActions() {
@@ -39,12 +40,12 @@ class SmartBot extends Bot {
                     }));
                 }
             } else {
+                // Randomizes flower priorities if same distance.
+                this.shuffle(this.flowerCells);
+
                 // Move to closest flower to collect pollen.
                 const firstFlower = this.flowerCells[0];
                 let minPath = this.getMinPath(pos, firstFlower.pos);
-
-                // Randomizes flower priorities if same distance.
-                this.shuffle(this.flowerCells);
 
                 for (let i = 1; i < this.flowerCells.length; ++i) {
                     const path = this.getMinPath(pos, this.flowerCells[i].pos);
@@ -90,7 +91,8 @@ class SmartBot extends Bot {
             availableMoves.push(MOVE.UP);
         }
 
-        // If available moves is less than 4, then that means the queen is in threat of an enemy. We should move it then.
+        // If available moves is less than 4, then that means the queen is in threat of an enemy.
+        // We should move it then.
         if (availableMoves.length < 4) {
             // Case when you won't escape an enemy no matter where you move.
             if (availableMoves.length == 0) {
@@ -105,8 +107,8 @@ class SmartBot extends Bot {
         } else {
             // No threat, so proceed to expand normally.
 
-            // Create hive if the bee to hive ratio is higher than what we want.
-            if (this.totalBees > this.beeToHiveRatio * this.hiveCells.length && posPotency == FLOWER.NONE) {
+            // Create hive if the bees to hive ratio is higher than what we want.
+            if (this.totalBees > BEES_TO_HIVE_RATIO * this.hiveCells.length && posPotency == FLOWER.NONE) {
                 pollenNotUsed -= CONSTANTS.HIVE_POLLEN_AMOUNT;
                 actions.push(new Action({
                     type: ACTION.CREATE_HIVE,
@@ -114,7 +116,7 @@ class SmartBot extends Bot {
             }
 
             // If queen is on a hive or flower, randomly move to an open spot.
-            if (posPotency > FLOWER.NONE || this.currMap.map[queenPos.y][queenPos.x].ownerId == this.id) {
+            if (!this.isEmpty(queenPos)) {
                 const movements = [MOVE.RIGHT, MOVE.DOWN, MOVE.LEFT, MOVE.UP];
                 this.shuffle(movements);
 
@@ -176,7 +178,8 @@ class SmartBot extends Bot {
         }
 
         if (this.hiveCells.length > 0) {
-            let totalBeesPerHive = Math.floor(Math.floor(pollenNotUsed / CONSTANTS.BEE_POLLEN_AMOUNT) / this.hiveCells.length);
+            const totalBeesPerHive =
+                Math.floor(Math.floor(pollenNotUsed / CONSTANTS.BEE_POLLEN_AMOUNT) / this.hiveCells.length);
             for (let hiveCell of this.hiveCells) {
                 if (totalBeesPerHive > CONSTANTS.MAX_BEES) {
                     actions.push(new Action({

@@ -1,15 +1,12 @@
 #include <time.h>
 #include <cstdlib>
 #include <iostream>
-#include <fstream>
 #include <queue>
 
 #include "helper-package/bot.h"
 #include "helper-package/constants.h"
 
 using namespace std;
-
-fstream fs;
 
 class HarvesterBot2 : public Bot {
 public:
@@ -70,13 +67,9 @@ private:
 int main() {
     srand(time(0));
 
-    fs.open("harvester_bot2_log.txt", fstream::out | fstream::trunc);
-
     cout.sync_with_stdio(false);
 
     HarvesterBot2 harvesterBot2 = HarvesterBot2(1);
 
     harvesterBot2.run();
-
-    fs.close();
 }

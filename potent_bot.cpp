@@ -1,14 +1,11 @@
 #include <time.h>
 #include <cstdlib>
 #include <iostream>
-#include <fstream>
 
 #include "helper-package/bot.h"
 #include "helper-package/constants.h"
 
 using namespace std;
-
-fstream fs;
 
 class PotentBot : public Bot {
 public:
@@ -51,13 +48,9 @@ protected:
 int main() {
     srand(time(0));
 
-    fs.open("potent_bot_log.txt", fstream::out | fstream::trunc);
-
     cout.sync_with_stdio(false);
 
     PotentBot randomBot = PotentBot();
 
     randomBot.run();
-
-    fs.close();
 }

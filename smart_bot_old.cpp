@@ -1,7 +1,6 @@
 #include <time.h>
 #include <cstdlib>
 #include <iostream>
-#include <fstream>
 #include <queue>
 #include <set>
 #include <algorithm>
@@ -10,8 +9,6 @@
 #include "helper-package/constants.h"
 
 using namespace std;
-
-fstream fs;
 
 class SmartBotOld : public Bot {
 public:
@@ -141,13 +138,9 @@ private:
 int main() {
     srand(time(0));
 
-    fs.open("smart_bot_old_log.txt", fstream::out | fstream::trunc);
-
     cout.sync_with_stdio(false);
 
     SmartBotOld smartBotOld = SmartBotOld(1, 30.0f);
 
     smartBotOld.run();
-
-    fs.close();
 }

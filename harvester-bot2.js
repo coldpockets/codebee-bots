@@ -8,8 +8,6 @@ const { Position } = require('./helper-package-js/position');
 class HarvesterBot2 extends Bot {
     constructor() {
         super("HarvesterBot2");
-
-        this.spawnedHive = false;
     }
 
     getActions() {
@@ -56,12 +54,11 @@ class HarvesterBot2 extends Bot {
 
         const queenPos = this.queenBee.pos;
 
-        if (!this.spawnedHive && this.queenBee.pollen >= CONSTANTS.HIVE_POLLEN_AMOUNT) {
+        if (this.hiveCells.length == 0) {
             actions.push(new Action({
                 type: ACTION.CREATE_HIVE,
             }));
-            this.spawnedHive = true;
-        } else if (this.hiveCells.length > 0 && this.queenBee.pollen >= CONSTANTS.BEE_POLLEN_AMOUNT) {
+        } else {
             actions.push(new Action({
                 type: ACTION.SPAWN,
                 pos: this.hiveCells[0].pos,

@@ -1,7 +1,6 @@
 #include <time.h>
 #include <cstdlib>
 #include <iostream>
-#include <fstream>
 #include <queue>
 #include <algorithm>
 
@@ -10,17 +9,11 @@
 
 using namespace std;
 
-fstream fs;
-
 class AttackBot : public Bot {
 public:
     AttackBot(int minPollen, int minBeesBeforeAttack, float percentage)
         : Bot("AttackBot"), minPollen(minPollen), minBees(minBeesBeforeAttack), percentage(percentage),
           spawnedHive(false) {
-//        queenMoves.push(move::DOWN);
-//        queenMoves.push(move::DOWN);
-////        queenMoves.push(move::RIGHT);
-////        queenMoves.push(move::RIGHT);
     }
 
 protected:
@@ -51,7 +44,6 @@ protected:
             int beesToAttack = (int) (totalBees * percentage);
 	        for (auto group = orderedCells.begin(); group != orderedCells.end() && beesToAttack >= 0; ++group) {
 	        	Distances d = *group;
-                fs << d.path.move << " " << d.path.distance << endl;
                 Position pos = d.cell->getPosition();
                 int count = d.cell->getBee()->count;
                 moves.push_back(Action(
@@ -130,13 +122,10 @@ private:
 int main() {
     srand(time(0));
 
-    fs.open("attack_bot_log.txt", fstream::out | fstream::trunc);
-
     cout.sync_with_stdio(false);
 
     AttackBot attackBot = AttackBot(1, 30, 0.20f);
 
     attackBot.run();
 
-    fs.close();
 }

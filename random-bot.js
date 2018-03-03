@@ -20,7 +20,7 @@ class RandomBot extends Bot {
                 type: ACTION.MOVE,
                 pos: beeCell.pos,
                 move: move,
-                face: move > 0 ? move - 1 : beeCell.bee.face,
+                face: move > 0 ? move - 1 /* Faces move direction. */ : beeCell.bee.face,
             }));
         }
 
