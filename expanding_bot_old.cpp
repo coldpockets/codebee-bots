@@ -15,6 +15,10 @@ public:
     ExpandingBotOld(int minPollen, float ratio) : Bot("ExpandingBotOld"), minPollen(minPollen), ratio(ratio) { }
 
 protected:
+    void init() {
+
+    }
+
     vector<Action> getMoves(int id, const Map& curMap) {
         vector<Action> moves;
 

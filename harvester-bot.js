@@ -10,6 +10,10 @@ class HarvesterBot extends Bot {
         super("HarvesterBot");
     }
 
+    init() {
+
+    }
+
     getActions() {
         const actions = [];
 

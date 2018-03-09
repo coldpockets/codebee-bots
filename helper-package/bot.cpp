@@ -11,16 +11,20 @@
 using namespace std;
 using namespace nlohmann;
 
-Bot::Bot(string name) : name(name) {
-    getInit(id, curMap);
-    sendInit(name);
-}
+Bot::Bot(string name) : name(name) { }
 
 Bot::~Bot() {
     delete curMap;
 }
 
+void Bot::init() {
+
+}
+
 void Bot::run() {
+    getInit(id, curMap);
+    sendInit(name);
+
     vector<Action> moves;
 
     int turn = 1;
@@ -47,6 +51,9 @@ void Bot::getInit(int &id, Map* &initialMap) {
             }
         }
     }
+
+    getTurn(*curMap);
+    init();
 }
 
 void Bot::sendInit(std::string name) {

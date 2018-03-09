@@ -12,6 +12,10 @@ class ExpandingBot extends Bot {
         super("ExpandingBot");
     }
 
+    init() {
+
+    }
+
     getActions() {
         const actions = [];
 

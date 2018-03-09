@@ -17,6 +17,10 @@ public:
     }
 
 protected:
+    void init() {
+
+    }
+
     vector<Action> getMoves(int id, const Map& curMap) {
         vector<Action> moves;
         vector<Cell*> enemyCells;

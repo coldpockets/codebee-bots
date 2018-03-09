@@ -18,6 +18,7 @@ protected:
     std::string getString();
     void sendString(std::string send);
 
+    virtual void init();
     void getInit(int &id, Map* &initialMap);
     void sendInit(std::string name);
     void getTurn(Map& curMap);

@@ -10,6 +10,10 @@ exports.Bot = class Bot {
         this.name = name;
     }
 
+    init() {
+
+    }
+
     async run() {
         await this.getInit();
         this.sendInit(this.name);
@@ -47,6 +51,10 @@ exports.Bot = class Bot {
                 }
             }
         }
+
+        await this.getTurn();
+
+        this.init();
     }
 
     sendInit(name) {

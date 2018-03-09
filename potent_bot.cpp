@@ -12,6 +12,10 @@ public:
     PotentBot() : Bot("PotentBot") { }
 
 protected:
+    void init() {
+
+    }
+
     vector<Action> getMoves(int id, const Map& curMap) {
         vector<Action> moves;
 

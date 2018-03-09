@@ -15,6 +15,10 @@ public:
     SmartBot(int minPollen, float ratio) : Bot("SmartBot"), minPollen(minPollen), ratio(ratio) { }
 
 protected:
+    // void init() {
+
+    // }
+
     vector<Action> getMoves(int id, const Map& curMap) {
         vector<Action> moves;
 

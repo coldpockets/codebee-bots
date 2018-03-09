@@ -10,6 +10,10 @@ class RandomBot extends Bot {
         super("RandomBot");
     }
 
+    init() {
+
+    }
+
     getActions() {
         const actions = [];
 

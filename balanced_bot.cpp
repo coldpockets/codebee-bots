@@ -14,6 +14,10 @@ public:
     BalancedBot(int minPollen) : Bot("BalancedBot"), minPollen(minPollen) { }
 
 protected:
+    void init() {
+
+    }
+
     vector<Action> getMoves(int id, const Map& curMap) {
         vector<Action> moves;
 

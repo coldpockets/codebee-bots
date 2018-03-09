@@ -12,6 +12,10 @@ class SmartBot extends Bot {
         super("SmartBot");
     }
 
+    init() {
+
+    }
+
     getActions() {
         const actions = [];
 
