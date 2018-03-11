@@ -19,7 +19,7 @@ class Bot:
 		self.sendInit(self.name)
 
 		# self.file.write("finished send init " + str(self.id) + '\n')
-		
+
 		turn = 1
 		while True:
 			# self.file.write("start of getTurn" + str(self.id) + '\n')
@@ -31,7 +31,7 @@ class Bot:
 			self.sendTurn(actions)
 
 			turn += 1
-		
+
 		# self.file.close()
 
 	def getInit(self):
@@ -69,7 +69,7 @@ class Bot:
 				if bee and bee.botId == self.id:
 					self.beeCells.append(item)
 					self.totalBees += bee.count
-				
+
 				if item.ownerId == self.id:
 					self.hiveCells.append(item)
 
@@ -81,6 +81,7 @@ class Bot:
 
 	def sendString(self, output):
 		stdout.write(str(output) + '\n')
+		stdout.flush()
 
 	def __serializeActions(self, actions):
 		mappedActions = []
@@ -99,7 +100,7 @@ class Bot:
 			elif action.type == Action.MOVE_QUEEN:
 				mappedAction['move'] = action.moveOrSpawnAmount
 				mappedAction['face'] = action.face
-			
+
 			mappedActions.append(mappedAction)
 
 		return json.dumps(mappedActions)
