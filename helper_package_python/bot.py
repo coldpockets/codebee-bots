@@ -1,7 +1,7 @@
 from sys import stdin, stdout
 import json
 
-from helper_package_python.constants import Action, NEUTRAL_ID
+from helper_package_python.constants import ActionType, NEUTRAL_ID
 from helper_package_python.map import Map
 from helper_package_python.position import Position
 
@@ -10,29 +10,19 @@ class Bot:
 		self.name = name
 
 	def run(self):
-		# self.file = open('debug.txt', 'w')
-
 		self.getInit()
-
-		# self.file.write("finished init " + str(self.id) + '\n')
 
 		self.sendInit(self.name)
 
-		# self.file.write("finished send init " + str(self.id) + '\n')
-
 		turn = 1
 		while True:
-			# self.file.write("start of getTurn" + str(self.id) + '\n')
 			self.getTurn()
-			# self.file.write("end of getTurn" + str(self.id) + '\n')
 
 			actions = self.getActions()
 
 			self.sendTurn(actions)
 
 			turn += 1
-
-		# self.file.close()
 
 	def getInit(self):
 		self.id = int(self.getString())
@@ -89,15 +79,15 @@ class Bot:
 			mappedAction = {
 				'type': action.type,
 			}
-			if action.type == Action.MOVE or action.type == Action.SPAWN:
+			if action.type == ActionType.MOVE or action.type == ActionType.SPAWN:
 				mappedAction['x'] = action.pos.x
 				mappedAction['y'] = action.pos.y
-				if action.type == Action.MOVE:
+				if action.type == ActionType.MOVE:
 					mappedAction['move'] = action.moveOrSpawnAmount
-				elif action.type == Action.SPAWN:
+				elif action.type == ActionType.SPAWN:
 					mappedAction['amount'] = action.moveOrSpawnAmount
 				mappedAction['face'] = action.face
-			elif action.type == Action.MOVE_QUEEN:
+			elif action.type == ActionType.MOVE_QUEEN:
 				mappedAction['move'] = action.moveOrSpawnAmount
 				mappedAction['face'] = action.face
 

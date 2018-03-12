@@ -6,7 +6,7 @@ HIVE_POLLEN_AMOUNT = 100
 MAX_BEES = 100
 MAX_POLLEN_FACTOR = 3
 
-class Action(IntEnum):
+class ActionType(IntEnum):
     MOVE = 0
     SPAWN = 1
     CREATE_HIVE = 2
