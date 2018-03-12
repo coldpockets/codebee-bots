@@ -1,7 +1,4 @@
-import sys, os
-sys.path.append(os.path.realpath(os.path.dirname(__file__)))
-
-from helper_package_python import constants
+from helper_package_python.constants import ActionType
 
 from helper_package_python.bot import Bot
 from helper_package_python.action import Action
@@ -19,7 +16,7 @@ class RandomBot(Bot):
 			move = randint(0, 4)
 
 			actions.append(Action(
-				constants.Action.MOVE,
+				ActionType.MOVE,
 				beeCell.pos,
 				move,
 				(move - 1) if (move > 0) else beeCell.bee.face
