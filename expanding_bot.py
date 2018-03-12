@@ -15,7 +15,7 @@ from helper_package_python.action import Action
 from random import randint
 import math
 
-BEES_TO_HIVE_RATIO = 30;
+BEES_TO_HIVE_RATIO = 30
 
 class ExpandingBot(Bot):
 	def __init__(self):
@@ -133,7 +133,7 @@ class ExpandingBot(Bot):
 
 	def isEmpty(self, pos):
 		return self.currMap.map[pos.y][pos.x].potency == Flower.NONE and \
-            self.currMap.map[pos.y][pos.x].ownerId == NEUTRAL_ID;
+            self.currMap.map[pos.y][pos.x].ownerId == NEUTRAL_ID
 
 def main():
 	expandingBot = ExpandingBot()
