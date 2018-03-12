@@ -16,7 +16,7 @@ class HarvesterBot(Bot):
 
 			# If the bees have pollen, move to queen.
 			if bee.pollen >= bee.count:
-				if !self.isBesideHiveOrQueen(pos):
+				if not self.isBesideHiveOrQueen(pos):
 					path = self.getMinPath(pos, self.queenBee.pos)
 
 					actions.append(Action(

@@ -15,7 +15,7 @@ from helper_package_python.action import Action
 from random import randint
 import math
 
-const BEES_TO_HIVE_RATIO = 30;
+BEES_TO_HIVE_RATIO = 30;
 
 class ExpandingBot(Bot):
 	def __init__(self):
@@ -30,7 +30,7 @@ class ExpandingBot(Bot):
 
 			if bee.pollen >= bee.count:
 				# If the bees have pollen, move to queen.
-				if !self.isBesideHiveOrQueen(pos):
+				if not self.isBesideHiveOrQueen(pos):
 					minPath = self.getMinPath(pos, self.queenBee.pos)
 
 					for hiveCell in self.hiveCells:
@@ -73,7 +73,7 @@ class ExpandingBot(Bot):
 			))
 
 		# If queen is on hive or flower, move to an open spot.
-		if !self.isEmpty(queenPos):
+		if not self.isEmpty(queenPos):
 			if self.isEmpty(self.getBoundedPos(queenPos.x + 1, queenPos.y)):
 				actions.append(Action(
 					ActionType.MOVE_QUEEN,
@@ -132,7 +132,7 @@ class ExpandingBot(Bot):
 		return actions
 
 	def isEmpty(self, pos):
-		return self.currMap.map[pos.y][pos.x].potency == Flower.NONE and
+		return self.currMap.map[pos.y][pos.x].potency == Flower.NONE and \
             self.currMap.map[pos.y][pos.x].ownerId == NEUTRAL_ID;
 
 def main():
