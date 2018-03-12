@@ -1,9 +1,9 @@
 from helper_package_python.constants import (
-	ActionType, 
-	Move, 
-	Face, 
-	Flower, 
-	HIVE_POLLEN_AMOUNT, 
+	ActionType,
+	Move,
+	Face,
+	Flower,
+	HIVE_POLLEN_AMOUNT,
 	BEE_POLLEN_AMOUNT,
 	MAX_BEES,
 	NEUTRAL_ID
@@ -48,7 +48,7 @@ class ExpandingBot(Bot):
 				# Move to closest flower to collect pollen.
 				firstFlower = self.flowerCells[0]
 				minPath = self.getMinPath(pos, firstFlower.pos)
-				
+
 				for i in range(1, len(self.flowerCells)):
 					path = self.getMinPath(pos, self.flowerCells[i].pos)
 					if path.distance < minPath.distance:
@@ -112,7 +112,7 @@ class ExpandingBot(Bot):
 					Face(move - 1) # Faces move direction
 				))
 
-		if not self.hiveCells:
+		if self.hiveCells:
 			totalBeesPerHive = math.floor(math.floor(pollenNotUsed / BEE_POLLEN_AMOUNT) / len(self.hiveCells))
 			for hiveCell in self.hiveCells:
 				# Makes sure we dont overspawn bees

@@ -1,4 +1,4 @@
-from helper_package_python.constants import ActionType, BEE_POLLEN_AMOUNT
+from helper_package_python.constants import ActionType, Face, BEE_POLLEN_AMOUNT
 
 from helper_package_python.bot import Bot
 from helper_package_python.action import Action
@@ -34,7 +34,7 @@ class HarvesterBot2(Bot):
 				# Move to closest flower to collect pollen.
 				firstFlower = self.flowerCells[0]
 				minPath = self.getMinPath(pos, firstFlower.pos)
-				
+
 				for i in range(1, len(self.flowerCells)):
 					path = self.getMinPath(pos, self.flowerCells[i].pos)
 					if path.distance < minPath.distance:

@@ -1,4 +1,4 @@
-from helper_package_python.constants import ActionType
+from helper_package_python.constants import ActionType, Face
 
 from helper_package_python.bot import Bot
 from helper_package_python.action import Action
