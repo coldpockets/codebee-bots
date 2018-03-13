@@ -19,6 +19,9 @@ class RandomBot(Bot):
 	def __init__(self):
 		super().__init__("RandomBot")
 
+	def init(self):
+		pass
+
 	def getActions(self):
 		actions = []
 

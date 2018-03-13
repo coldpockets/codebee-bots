@@ -21,6 +21,9 @@ class ExpandingBot(Bot):
 	def __init__(self):
 		super().__init__("ExpandingBot")
 
+	def init(self):
+		pass
+
 	def getActions(self):
 		actions = []
 

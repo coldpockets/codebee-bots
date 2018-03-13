@@ -9,6 +9,9 @@ class Bot:
 	def __init__(self, name):
 		self.name = name
 
+	def init(self):
+		pass
+
 	def run(self):
 		self.getInit()
 
@@ -39,6 +42,11 @@ class Bot:
 			for item in row:
 				if item.potency > 0:
 					self.flowerCells.append(item)
+
+		# Get initial map state for preprocessing
+		self.getTurn()
+
+		self.init()
 
 	def sendInit(self, name):
 		self.sendString(name)
