@@ -91,7 +91,7 @@ class Map:
 			self.map[pHive[JSON_INDICES['HIVE']['Y']]][pHive[JSON_INDICES['HIVE']['X']]].ownerId = pHive[JSON_INDICES['HIVE']['OWNER_ID']]
 
 	def getPath(self, start, end):
-		path = Path()
+		path = Path(m=Move.STAY)
 		downDist = (self.height + end.y - start.y) % self.height
 		upDist = (self.height + start.y - end.y) % self.height
 		rightDist = (self.width + end.x - start.x) % self.width
