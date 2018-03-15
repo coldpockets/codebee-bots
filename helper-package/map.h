@@ -16,7 +16,7 @@ public:
         int distance;
         Move move;
 
-        Path(int d = 0, Move m = move::UP) : distance(d), move(m) { }
+        Path(int d = 0, Move m = move::STAY) : distance(d), move(m) { }
 
         bool operator <(const Path &other) const {
             return distance < other.distance;

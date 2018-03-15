@@ -33,12 +33,12 @@ JSON_INDICES = {
 class Path:
 	def __init__(self, d=None, m=None):
 		self.distance = d or 0
-		self.move = m or Move.UP
+		self.move = m or Move.STAY
 
 class Map:
 	def __init__(self, pollenMap):
 		pMap = json.loads(pollenMap)
-		
+
 		self.height = len(pMap)
 		self.width = len(pMap[0])
 
